@@ -1,0 +1,34 @@
+Install 2017-07-05-raspbian-jessie.img on a uSDHC flash memory per
+https://www.raspberrypi.org/documentation/installation/installing-images/README.md.
+
+I did not follow the above instructions. Instead I did the following.
+Note the use of cmp to verify that the written image.
+
+    doj@sbc:~/mnt/home/pi/raspbian/2017-07-05$ ll
+    total 4554768
+    -rw-r--r-- 1 doj doj 4661483821 Jul  5 13:02 2017-07-05-raspbian-jessie.img
+    drwxrwxr-x 3 doj doj       4096 Jul  5 19:22 downloads.raspberrypi.org
+    -rw-rw-r-- 1 doj doj        168 Jul  5 19:22 urls
+    doj@sbc:~/mnt/home/pi/raspbian/2017-07-05$ cat 2017-07-05-raspbian-jessie.img | tee >(sha512sum) >(sha256sum) >(sha1sum) >(md5sum) >/dev/null; sleep 10
+    7b6c4a6b43c072645dac2a213eb91bf2  -
+    67ea58f79692dbfad87d6724d1100a70da301a7e  -
+    60cf77094b0c121aaca7d21b2b2f56d067cf708f21b6873dce902115e0f0c993  -
+    9d7d3dd94d75f532cf7af15a8dd86047fbb3c943525b02b892d18206013e4bf476a80f1a3963a167c3ae1e49776ec7b3e434819ba762829338bf2c54f621a886  -
+    doj@sbc:~/mnt/home/pi/raspbian/2017-07-05$ factor 4661483821
+    4661483821: 479 9731699
+    doj@sbc:~/mnt/home/pi/raspbian/2017-07-05$ date;time sudo dd if=2017-07-05-raspbian-jessie.img of=/dev/mmcblk0 bs=9731699;date
+    Wed Aug  2 12:08:53 EDT 2017
+    479+0 records in
+    479+0 records out
+    4661483821 bytes (4.7 GB, 4.3 GiB) copied, 576 s, 8.1 MB/s
+
+    real    9m36.031s
+    user    0m0.016s
+    sys     0m11.132s
+    Wed Aug  2 12:18:29 EDT 2017
+    doj@sbc:~/mnt/home/pi/raspbian/2017-07-05$ cmp 2017-07-05-raspbian-jessie.img <(sudo dd if=/dev/mmcblk0 count=479 bs=9731699)
+    479+0 records in
+    479+0 records out
+    4661483821 bytes (4.7 GB, 4.3 GiB) copied, 544.001 s, 8.6 MB/s
+    doj@sbc:~/mnt/home/pi/raspbian/2017-07-05$ 
+
